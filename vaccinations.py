@@ -21,9 +21,16 @@ vaccination_date = str(vaccinations_date.values.tolist()[1])
 vaccination_date = vaccination_date.split('Impfungen_bis_einschl_', 1)[1]
 vaccination_date = vaccination_date.split(')', 1)[0]
 
-vaccinations_diff = pd.read_excel('Impfquotenmonitoring.xlsx', sheet_name=2).values.tolist()
-vaccinations_diff_dates = len(vaccinations_diff)
-vaccinations_diff = (float(vaccinations_diff[vaccinations_diff_dates-1][1]) - float(vaccinations_diff[vaccinations_diff_dates-2][1])) / float(vaccinations_diff[vaccinations_diff_dates-1][1]) * 100
+vaccinations_diff_table = pd.read_excel('Impfquotenmonitoring.xlsx', sheet_name="Impfungen_proTag").fillna("missing").values.tolist()
+vaccinations_diff_dates = len(vaccinations_diff_table)
+
+# fix random appearing numbers in the table
+while vaccinations_diff_table[vaccinations_diff_dates-1][0] == 'missing':
+   vaccinations_diff_dates = vaccinations_diff_dates - 1
+
+vaccinations_diff = (float(vaccinations_diff_table[vaccinations_diff_dates-1][1]) - float(vaccinations_diff_table[vaccinations_diff_dates-2][1])) / float(vaccinations_diff_table[vaccinations_diff_dates-1][1]) * 100
+
+vaccinations_diff_vorz = ""
 if vaccinations_diff > 0:
    vaccinations_diff_vorz = "+"
 
@@ -31,6 +38,6 @@ if vaccinations_diff > 0:
 #vaccination_date_time = vaccinations_date.values.tolist()[1][2]
 #vaccination_date = vaccination_date.strftime("%m.%d.%Y")
 
-vaccinations = "Aktuelle COVID-19-Impfungen in Deutschland: Es wurden " + str("{:,.0f}".format(vaccination_ger_num)) + " Personen (" + str("{:.2f}".format(vaccination_ger_perc)) + " % der Bevölkerung) bis zum " + str(format(vaccination_date)) + " geimpft. An diesem Tag wurden " + str("{:,.0f}".format(vaccination_ger_diff)) + " Personen geimpft (" + vaccinations_diff_vorz + str("{:.2f}".format(vaccinations_diff)) + " % im Vergleich zum Vortag)"
+vaccinations = "Aktuelle COVID-19-Impfungen in Deutschland: Es wurden " + str("{:,.0f}".format(vaccination_ger_num)) + " Personen (" + str("{:.2f}".format(vaccination_ger_perc)) + " % der Bevölkerung) bis zum " + str(format(vaccination_date)) + " geimpft. An diesem Tag wurden " + str("{:,.0f}".format(vaccination_ger_diff)) + " Personen geimpft (" + vaccinations_diff_vorz + str("{:.2f}".format(vaccinations_diff)) + " % im Vergleich zum Vortag)."
 
 print(vaccinations)
